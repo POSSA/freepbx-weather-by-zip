@@ -100,10 +100,3 @@ $tts_installed = array();
 $tts_engines = array("text2wave", "flite", "swift");
 
 $config = parse_amportal_conf( "/etc/amportal.conf" );
-
-
-
-
-?>
-
-

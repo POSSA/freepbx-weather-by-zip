@@ -1,4 +1,4 @@
-<?php 
+<?php
 //
 //
 //This program is free software; you can redistribute it and/or
@@ -41,7 +41,7 @@ echo "<option".(($date[0]==swift)?' selected':'').">swift</option>\n";
 		</td>
 	</tr><hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
 <small><center>Weather by Zip was put into FreePBX Module format by Tony Shiffer.<br>
-The module is maintained by the developer community at <a target="_blank" href="http://projects.colsolgrp.net/projects/show/weatherzip"> CSG Software Project Management</a></center></small>
+The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA"> PBX Open Source Software Alliance</a></center></small>
 <?php
 print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy.</a>';
 print '<br>Module version '.$module_info['module']['version'].'</p>';

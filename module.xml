@@ -1,17 +1,18 @@
 <module>
 	<rawname>weatherzip</rawname>
 	<name>Weather by ZIP</name>
-	<version>1.1.7</version>
+	<version>1.1.8</version>
 	<type>setup</type>
 	<category>Third Party Addon</category>
 	<menuitems>
 		<weatherzip>Weather by ZIP</weatherzip>
 	</menuitems>
-    <publisher>projects.colsolgrp.net</publisher> 
+    <publisher>PBX Open Source Software Alliance</publisher> 
 	<description>
                 Provide U.S. Weather by Zip Code
         </description>
 	 <changelog>
+		*1.1.8* For FreePBX 2.9+ compatibility
 	 	*1.1.7* Issue #314, #316 (http://projects.colsolgrp.net/versions/show/77) 9/23/10
 		*1.1.6* Issue #316 (http://projects.colsolgrp.net/versions/show/65) 12-29-09
 	 	*1.1.5* Issue #148, #156 (http://projects.colsolgrp.net/issues/show/118) 7-6-09
