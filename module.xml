@@ -1,0 +1,29 @@
+<module>
+	<rawname>weatherzip</rawname>
+	<name>Weather by ZIP</name>
+	<version>1.1.7</version>
+	<type>setup</type>
+	<category>Third Party Addon</category>
+	<menuitems>
+		<weatherzip>Weather by ZIP</weatherzip>
+	</menuitems>
+    <publisher>projects.colsolgrp.net</publisher> 
+	<description>
+                Provide U.S. Weather by Zip Code
+        </description>
+	 <changelog>
+	 	*1.1.7* Issue #314, #316 (http://projects.colsolgrp.net/versions/show/77) 9/23/10
+		*1.1.6* Issue #316 (http://projects.colsolgrp.net/versions/show/65) 12-29-09
+	 	*1.1.5* Issue #148, #156 (http://projects.colsolgrp.net/issues/show/118) 7-6-09
+		*1.1.4* Issue #118 (http://projects.colsolgrp.net/issues/show/118) 6-20-09
+	 	*1.1.3* Corrected cron task error in FreePBX(tshif) 5-18-09
+		*1.1.2* Re-Corrected swift playback of weather report. Corrected cron task insert error on upgrade.(tshif) 5-8-09
+		*1.1.1* Added cron task to delete tts files older than system date +1 (tshif) 5-4-09
+		*1.1.0* Corrected swift playback of weather report. Igor can be fully banished now (tshif) 4-9-09
+		*1.0.2* Debug variable correction. Removed dependance on default DB id/pw.  (tshif) 4-8-09
+		*1.0.1* Minor clean up  (tshif) 3-31-09
+		*1.0.0* 1st Module trial  (tshif) 3-31-09
+        </changelog>
+	<info>http://projects.colsolgrp.net/projects/weatherzip</info>
+	<location>projects.colsolgrp.net/projects/list_files/weatherzip</location>
+ </module>
