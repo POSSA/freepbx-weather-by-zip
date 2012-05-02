@@ -1,4 +1,4 @@
-#!/usr/bin/php -q 
+#!/usr/bin/php -q
 <? 
  ob_implicit_flush(false); 
  error_reporting(0); 
@@ -12,7 +12,7 @@
 
  $debug = 0; 
  $newlogeachdebug = 1;
- $emaildebuglog = 1;
+ $emaildebuglog = 0;
  $email = "user@emailplace.com" ;
  $ttspick = 0 ;
 //-------- DON'T CHANGE ANYTHING BELOW THIS LINE ----------------
