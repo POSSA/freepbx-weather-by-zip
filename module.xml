@@ -1,7 +1,8 @@
 <module>
 	<rawname>weatherzip</rawname>
 	<name>Weather by ZIP</name>
-	<version>1.1.8</version>
+	<version>1.2</version>
+	<license>GNU GPL2</license>
 	<type>setup</type>
 	<category>Third Party Addon</category>
 	<menuitems>
@@ -12,7 +13,7 @@
                 Provide U.S. Weather by Zip Code
         </description>
 	 <changelog>
-		*1.1.8* For FreePBX 2.9+ compatibility
+		*1.2* Fixed for Asterisk 2.8+ and FreePBX 2.9+
 	 	*1.1.7* Issue #314, #316 (http://projects.colsolgrp.net/versions/show/77) 9/23/10
 		*1.1.6* Issue #316 (http://projects.colsolgrp.net/versions/show/65) 12-29-09
 	 	*1.1.5* Issue #148, #156 (http://projects.colsolgrp.net/issues/show/118) 7-6-09
@@ -25,6 +26,6 @@
 		*1.0.1* Minor clean up  (tshif) 3-31-09
 		*1.0.0* 1st Module trial  (tshif) 3-31-09
         </changelog>
-	<info>http://projects.colsolgrp.net/projects/weatherzip</info>
-	<location>projects.colsolgrp.net/projects/list_files/weatherzip</location>
+	<info>https://github.com/POSSA/freepbx-weather-by-zip</info>
+	<location>https://github.com/POSSA/freepbx-weather-by-zip</location>
  </module>

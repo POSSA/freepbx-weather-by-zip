@@ -40,9 +40,9 @@ echo "<option".(($date[0]==swift)?' selected':'').">swift</option>\n";
 </select>
 		</td>
 	</tr><hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
-<small><center>Weather by Zip was put into FreePBX Module format by Tony Shiffer.<br>
-The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA"> PBX Open Source Software Alliance</a></center></small>
+<center><br>
+The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a></center>
 <?php
-print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy.</a>';
+print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a> and module by <a target="_blank" href="http://projects.colsolgrp.net">Tony Shiffer</a>.';
 print '<br>Module version '.$module_info['module']['version'].'</p>';
 ?>

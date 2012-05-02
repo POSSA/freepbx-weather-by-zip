@@ -18,7 +18,7 @@ if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
 <?php
 
 $sql ="INSERT INTO weatheroptions (engine, defaultzip) ";
-$sql .= "               VALUES ('swift',        '12345')";
+$sql .= "               VALUES ('flite',        '12345')";
 
 $check = $db->query($sql);
 if (DB::IsError($check)) {
