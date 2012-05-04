@@ -14,7 +14,7 @@
 // Make sure you pick legitimate Canadian postal codes. There's NO error checking.
 // Test code with a browser first, e.g. http://www.google.com/ig/api?weather=K1N6N5
 
- $canada[0] = "b2n1x6" ; // Truro
+ $canada[0] = "K1N6N5" ; // Ottawa
  $canada[1] = "V5K0A1" ; // Vancouver
  $canada[2] = "T1L1B8" ; // Banff
  $canada[3] = "T6P1X2" ; // Edmonton
