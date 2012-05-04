@@ -12,8 +12,8 @@
 
  $debug = 0; 
  $newlogeachdebug = 1;
- $emaildebuglog = 1;
- $email = "user@emailplace.com" ;
+ $emaildebuglog = 0;
+ $email = "user@domain" ;
  $ttspick = 0 ;
 //-------- DON'T CHANGE ANYTHING BELOW THIS LINE ----------------
 
