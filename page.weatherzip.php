@@ -20,7 +20,8 @@ if(count($_POST)){
 #print_r($selected);
 #	die();
 
-$module_info = xml2array("modules/weatherzip/module.xml");
+//The following line references a function that is only present if superfecta 2.x is installed
+//$module_info = xml2array("modules/weatherzip/module.xml");
 
 ?>
 <form method="POST" action="">
