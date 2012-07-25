@@ -202,9 +202,10 @@ $value = "";
 
 //--------------
 
-//  #module - Following line has been changed from the original script
+//  #module - Following line has been changed from the original NV script
 $link = mysql_connect("localhost", $dsn['username'], $dsn['password'])
     or die("Data base connection failed");
+//  #module - Following line has been changed from the original NV script
 mysql_select_db("asterisk")
     or die("data base open failed");
 
