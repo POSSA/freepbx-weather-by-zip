@@ -20,13 +20,17 @@ if(count($_POST)){
 #print_r($selected);
 #	die();
 
-$module_info = xml2array("modules/weatherzip/module.xml");
+//  Get current featurecode from FreePBX registry
+$fcc = new featurecode('weatherzip', 'weatherzip');
+$featurecode = $fcc->getCodeActive(); 
+
 
 ?>
 <form method="POST" action="">
 	<br><h2><?php echo _("U.S. Weather by Zipcode")?><hr></h5></td></tr>
 Weather by Zip Code allow you to retrieve current weather information from any touchtone phone using nothing more than your PBX connected to the Internet.  When prompted, you key in any of 42,740 U.S. Zip Codes using a touchtone phone. The report is downloaded, converted to an audio file, and played back to you.<br><br>
-Current conditions and a seven-day forecast for the chosen city then will be retrieved from the National Weather Service and played back to your telephone using the Flite or Swift text-to-speech engine. <br>
+Current conditions and a seven-day forecast for the chosen city then will be retrieved from the National Weather Service and played back to your telephone using the selected text-to-speech engine. <br><br>
+The feature code to access this service is currently set to <b><?PHP print $featurecode; ?></b>.  This value can be changed in Feature Codes. <br>
 
 	<tr><td colspan="2"><br><h5><?php echo _("TTS Engine")?>:<hr></h5></td></tr>
 <tr>Select the Text To Speach engine you wish the Weather by Zip program to use to audio render your reports.<br><br>
@@ -43,6 +47,6 @@ echo "<option".(($date[0]==swift)?' selected':'').">swift</option>\n";
 <center><br>
 The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a></center>
 <?php
-print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a> and module by <a target="_blank" href="http://projects.colsolgrp.net">Tony Shiffer</a>.';
-print '<br>Module version '.$module_info['module']['version'].'</p>';
+print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.';
+
 ?>
