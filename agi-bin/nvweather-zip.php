@@ -1,23 +1,23 @@
 #!/usr/bin/php -q 
-<?php 
+<?php
  ob_implicit_flush(false); 
  error_reporting(0); 
  set_time_limit(300); 
  $ttsengine[0] = "flite" ;
  $ttsengine[1] = "swift" ;
 
-//   Nerd Vittles ZIP Weather ver. 4.1, (c) Copyright Ward Mundy, 2007-2008. All rights reserved.
-
+//   Nerd Vittles ZIP Weather ver. 4.1, (c) Copyright Ward Mundy, 2007-2012. All rights reserved.
+//   #module  All areas changed from the original Nerd Vittles script are marked with #module
 //-------- DON'T CHANGE ANYTHING ABOVE THIS LINE ----------------
 
- $debug = 0; 
+ $debug = 1; 
  $newlogeachdebug = 1;
  $emaildebuglog = 0;
- $email = "user@domain" ;
- $ttspick = 0 ;
+ $email = "yourname@yourdomain" ;
+ $ttspick=0 ;
 //-------- DON'T CHANGE ANYTHING BELOW THIS LINE ----------------
 
-/// code to get ttspick from db
+// #module - START CODE ADDED TO NV SCRIPT FOR FREEPBX MODULE COMPATIBILITY ---
 
 require_once 'DB.php';
 
@@ -67,9 +67,9 @@ if ($engine == "flite") {
 	$ttspick = "0";
 }
 
+//#module - END CODE ADDED TO NV SCRIPT FOR FREEPBX MODULE COMPATIBILITY ---
 
 
-//----  end of db config code
 
 $log = "/var/log/asterisk/nv-weather-zip.txt" ;
 if ($debug and $newlogeachdebug) :
@@ -83,7 +83,7 @@ endif ;
  $stdout = fopen( 'php://stdout', 'w' ); 
 
 if ($debug) :
-  fputs($stdlog, "Nerd Vittles ZIP Weather ver. 4.1 (c) Copyright 2007-2008, Ward Mundy. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
+  fputs($stdlog, "Nerd Vittles ZIP Weather ver 4.1 (c) Copyright 2007-2012, Ward Mundy. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
 endif ;
 
 function read() {  
@@ -202,7 +202,7 @@ $value = "";
 
 //--------------
 
-
+//  #module - Following line has been changed from the original script
 $link = mysql_connect("localhost", $dsn['username'], $dsn['password'])
     or die("Data base connection failed");
 mysql_select_db("asterisk")
@@ -242,6 +242,8 @@ while ($row = mysql_fetch_array($result)) {
 //  $longitude = -1*($row["lo_g"] + ($row["lo_p"]+$row["lo_s"]/60)/60) ;
   $city  = $row["city"] . ", " . $row["fullstate"] ;
   $city2 = $row["city"] . ", " . $row["state"] ;
+  $latitude = $row["latitude"] ;
+  $longitude = $row["longitude"] ;
 }
 
 if ($debug) :
@@ -271,20 +273,24 @@ if (strlen($city)<1) :
  fclose($stdout);
  fclose($stdlog);
  if ($emaildebuglog) :
-// system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather by Zip ver. 4.1 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
+// system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather ver. 4.1 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
   system($txt) ;
  endif ;
  exit ;
 endif ;
 
-//echo $city . ": LAT " ;
-//echo $latitude ;
-//echo "  LONG: " ;
-//echo $longitude ;
+echo $city . ": LAT " ;
+echo $latitude ;
+echo "  LONG: " ;
+echo $longitude ;
 
 //$query = "http://www.srh.noaa.gov/ifps/MapClick.php?FcstType=text&textField1=$latitude&textField2=$longitude&site=ffc&Radius=0&CiTemplate=0&TextType=1" ;
 
-$query = "http://www.srh.noaa.gov/port/port_zc.php?inputstring=$zip" ;
+//$query = "http://www.srh.noaa.gov/port/port_zc.php?inputstring=$zip" ;
+
+//$query ="http://mobile.weather.gov/index.php?lat=$latitude&lon=$longitude#text_forecast" ;
+
+$query = "http://forecast.weather.gov/zipcity.php?inputstring=$zip";
 
 $fd = fopen($query, "r");
 if (!$fd) {
@@ -302,323 +308,148 @@ if ($debug) :
 endif ;
 
 
-//$thetext = "National Weather Service" ;
-//$start= strpos($value, $thetext);
-//$newvalue=substr($value, $start);
-
-//$thetext = "<div align=\"center\">" ;
-$thetext = "Current Local Conditions";
+$thetext="point-forecast-area-title";
 $start= strpos($value, $thetext);
 //$newvalue="This National Weather Service update provided for " . substr($newvalue, $start+26);
 $value = substr($value,$start);
-$thetext = "<br>" ;
+$thetext = "</div>" ;
 $start= strpos($value, $thetext);
-$cityupdate="This National Weather Service update provided for ". $city . ". ";
-$newvalue="Current local conditions at " . substr($value, $start);
+$cityupdate="This National Weather Service update for ". $city . " brought to you by Nerd Vittles. ";
+$newvalue=$cityupdate."Current local conditions " . substr($value,27, $start-27). ": ";
+$newvalue = str_replace( " E ", " East of ", $newvalue );
+$newvalue = str_replace( " ENE ", " East North East of ", $newvalue );
+$newvalue = str_replace( " NE ", " North East of ", $newvalue );
+$newvalue = str_replace( " W ", " West of ", $newvalue );
+$newvalue = str_replace( " NW ", " North West of ", $newvalue );
+$newvalue = str_replace( " WNW ", " West North West of ", $newvalue );
+$newvalue = str_replace( " N ", " North of ", $newvalue );
+$newvalue = str_replace( " S ", " South of ", $newvalue );
+$newvalue = str_replace( " SE ", " South East of ", $newvalue );
+$newvalue = str_replace( " SSE ", " South South East of ", $newvalue );
+$newvalue = str_replace( " SW ", " South West of ", $newvalue );
+$newvalue = str_replace( " SSW ", " South South West of ", $newvalue );
+$newvalue = str_replace(",","",$newvalue);
+$finish=$start+6;
+$value=substr($value,$finish);
 
-$finish= strpos($newvalue, "<hr>");  
-$newvalue=substr($newvalue, 0, $finish);
+$thetext="current-conditions";
+$start= strpos($value, $thetext);
+$value = substr($value,$start);
+$thetext="myforecast-current";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+20);
+$thetext="</p>";
+$start= strpos($value, $thetext);
+$conditions=substr($value,0,$start).". ";
+$newvalue.=$conditions;
 
-// new code to delete Latitude, Longitude, and Elevation info from report
-$start = strpos($newvalue,"<br>") ;
-$start2 = strpos($newvalue,"<br>",$start+1) ;
-$start3 = strpos($newvalue,"<br>",$start2+1) ;
-$newvalue = substr($newvalue,0,$start2) . " " . substr($newvalue,$start3) ;
-// new code ends here
+$thetext="myforecast-current-lrg";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+24);
+$thetext="</p>";
+$start= strpos($value, $thetext);
+$ftemp=substr($value,0,$start).". ";
+$ftemp = str_replace( "&deg;F", " degrees Fahrenheit", $ftemp );
+$newvalue.=$ftemp;
 
-$thetext = "Last Update:" ;
-$start = strpos($newvalue, $thetext);
-$thedate = substr($newvalue,$start+13,8) ;
+$thetext="myforecast-current-sm";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+23);
+$thetext="</span>";
+$start= strpos($value, $thetext);
+$ctemp=substr($value,0,$start).". ";
+$ctemp = str_replace( "&deg;C", " degrees Centigrade", $ctemp );
+$newvalue.=$ctemp;
 
-$themo = substr($thedate,0,2);
-$theda = substr($thedate,3,2);
-switch ($themo) {
- case "01":
-  $themo="January ";
-  break;
- case "02":
-  $themo="February ";
-  break;
- case "03":
-  $themo="March ";
-  break;
- case "04":
-  $themo="April ";
-  break;
- case "05":
-  $themo="May ";
-  break;
- case "06":
-  $themo="June ";
-  break;
- case "07":
-  $themo="July ";
-  break;
- case "08":
-  $themo="August ";
-  break;
- case "09":
-  $themo="September ";
-  break;
- case "10":
-  $themo="October ";
-  break;
- case "11":
-  $themo="November ";
-  break;
- case "12":
-  $themo="December ";
-  break;
+
+$thetext="current-conditions-detail";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+28);
+$thetext="Humidity</span>";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+15);
+$thetext="</li>";
+$start= strpos($value, $thetext);
+$humidity="Humidity: ".substr($value,0,$start).". ";
+$humidity = str_replace( "%", " per cent", $humidity );
+$newvalue.=$humidity;
+
+$thetext="Wind Speed</span>";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+17);
+$thetext="</li>";
+$start= strpos($value, $thetext);
+$windspeed="Wend Speed: ".substr($value,0,$start).". ";
+$windspeed = str_replace( "mph","miles per hour", $windspeed );
+$windspeed = str_replace( "Vrbl", "Variable at ", $windspeed );
+$windspeed = str_replace( " E ", " From the East at ", $windspeed );
+$windspeed = str_replace( " NE ", " From the North East at ", $windspeed );
+$windspeed = str_replace( " W ", " From the West at ", $windspeed );
+$windspeed = str_replace( " NW ", " From the North West at ", $windspeed );
+$windspeed = str_replace( " N ", " From the North at ", $windspeed );
+$windspeed = str_replace( " S ", " From the South at ", $windspeed );
+$windspeed = str_replace( " SE ", " From the South East at ", $windspeed );
+$windspeed = str_replace( " SW ", " From the South West at ", $windspeed );
+$windspeed = str_replace( " G ", " gusting to ", $windspeed );
+$windspeed = str_replace( "NA", " currently unavailable ", $windspeed );
+$windspeed = str_replace( "NULL", " currently unavailable ", $windspeed );
+$newvalue.=$windspeed;
+
+$thetext="Barometer</span>";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+16);
+$thetext="</li>";
+$start= strpos($value, $thetext);
+$barometer="Barometric Pressure: ".substr($value,0,$start).". ";
+$barometer = str_replace( " in ", " inches. ", $barometer);
+$barometer = str_replace( " in", " inches", $barometer);
+$barometer = str_replace( "mb)", "millibars", $barometer);
+$barometer = str_replace( "(", " ", $barometer);
+$barometer = str_replace( ".00", "", $barometer );
+$newvalue.=$barometer;
+
+$thetext="Visibility</span>";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+17);
+$thetext="</li>";
+$start= strpos($value, $thetext);
+$visibility="Vizibility: ".substr($value,0,$start).". ";
+$visibility = str_replace( " mi", " miles" , $visibility);
+$visibility = str_replace( ".00", "", $visibility );
+$newvalue.=$visibility;
+$newvalue.="Here's the 5 day forecast: ";
+
+
+$thetext="7-DAY FORECAST";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+15);
+
+for ( $counter=1; $counter<= 9; $counter += 1) {
+$thetext="label".chr(34).">";
+$start= strpos($value, $thetext);
+$value = substr($value,$start+7);
+$thetext="</span>";
+$start= strpos($value, $thetext);
+$forecast=substr($value,0,$start).": ";
+$value = substr($value,$start+7);
+$thetext="</li>";
+$start= strpos($value, $thetext);
+$forecast.=substr($value,0,$start)." ";
+$forecast = str_replace( ",", " ", $forecast );
+$forecast = str_replace( "pm", " p.m", $forecast);
+$forecast = str_replace( "am", " a.m", $forecast);
+$forecast = str_replace( "%", " per cent", $forecast);
+$forecast = str_replace( "wind", "wends", $forecast );
+$forecast = str_replace( "mph", "miles per hour", $forecast );
+$newvalue.=$forecast;
 }
 
-if (substr($theda,0,1)=="0") :
- $theda=substr($theda,1,1) ;
-endif ;
 
-$newdate = $themo . $theda . " at " ;
-
-$newvalue=substr($newvalue,0,$start) . "As last reported on: " . $newdate . substr($newvalue,$start+22) ;
-
-$newvalue = str_replace( "<br>", ". ", $newvalue ); 
-$newvalue = str_replace( "at:.", "at: ", $newvalue );
-$newvalue = str_replace( "/", " ", $newvalue );
-$newvalue = str_replace( " am ", " a.m. ", $newvalue ); 
-$newvalue = str_replace( " pm ", " p.m. ", $newvalue ); 
-$newvalue = str_replace( " AM ", " A.M. ", $newvalue );
-$newvalue = str_replace( " PM ", " P.M. ", $newvalue );
-$newvalue = str_replace( "Special Weather Statement", " ", $newvalue ); 
-$newvalue = str_replace( "AST", "Atlantic Standard Time. ", $newvalue );
-$newvalue = str_replace( "ADT", "Atlantic Daylight Time. ", $newvalue );
-$newvalue = str_replace( "EST", "Eastern Standard Time. ", $newvalue ); 
-$newvalue = str_replace( "EDT", "Eastern Daylight Time. ", $newvalue ); 
-$newvalue = str_replace( "PST", "Pacific Standard Time. ", $newvalue ); 
-$newvalue = str_replace( "PDT", "Pacific Daylight Time. ", $newvalue ); 
-$newvalue = str_replace( "CST", "Central Standard Time. ", $newvalue ); 
-$newvalue = str_replace( "CDT", "Central Daylight Time. ", $newvalue ); 
-$newvalue = str_replace( "MST", "Mountain Standard Time. ", $newvalue ); 
-$newvalue = str_replace( "MDT", "Mountain Daylight Time. ", $newvalue ); 
-$newvalue = str_replace( "HST", "Hawaii Standard Time. ", $newvalue ); 
-$newvalue = str_replace( "HDT", "Hawaii Daylight Time. ", $newvalue ); 
-$newvalue = str_replace( "&deg;F", " degrees fair in height. ", $newvalue ); 
-$newvalue = str_replace( "&deg;C", " degrees centigrade. ", $newvalue ); 
-$newvalue = str_replace( "mb)", " millibars. ) ", $newvalue ); 
-$newvalue = str_replace( "MPH", " miles per hour. ", $newvalue ); 
-$newvalue = str_replace( "mph", " miles per hour. ", $newvalue ); 
-$newvalue = str_replace( " E ", " East ", $newvalue ); 
-$newvalue = str_replace( " NE ", " North East ", $newvalue ); 
-$newvalue = str_replace( " W ", " West ", $newvalue ); 
-$newvalue = str_replace( " NW ", " North West ", $newvalue ); 
-$newvalue = str_replace( " N ", " North ", $newvalue ); 
-$newvalue = str_replace( " S ", " South ", $newvalue ); 
-$newvalue = str_replace( " SE ", " South East ", $newvalue ); 
-$newvalue = str_replace( " SW ", " South West ", $newvalue ); 
-$newvalue = str_replace( "&nbsp;", " ", $newvalue ); 
-$newvalue = str_replace( "So.", "Southern ", $newvalue );
-$newvalue = str_replace( " Usc", "", $newvalue ); 
-$newvalue = str_replace( "Intnl", "International ", $newvalue ); 
-$newvalue = str_replace( "Intl", "International ", $newvalue ); 
-$newvalue = str_replace( "Term.", "Terminal.", $newvalue );
-$newvalue = str_replace( "Arpt", "Airport ", $newvalue ); 
-$newvalue = str_replace( "01:", "1:", $newvalue );
-$newvalue = str_replace( "02:", "2:", $newvalue );
-$newvalue = str_replace( "03:", "3:", $newvalue );
-$newvalue = str_replace( "04:", "4:", $newvalue );
-$newvalue = str_replace( "05:", "5:", $newvalue );
-$newvalue = str_replace( "06:", "6:", $newvalue );
-$newvalue = str_replace( "07:", "7:", $newvalue );
-$newvalue = str_replace( "08:", "8:", $newvalue );
-$newvalue = str_replace( "09:", "9:", $newvalue );
-$newvalue = str_replace( ". .", ".", $newvalue );
-$newvalue = str_replace( " DC", " D.C.", $newvalue );
-$newvalue = str_replace( " District of Columbia", " D.C.", $newvalue );
-$newvalue = str_replace( "..", ".", $newvalue );
-$newvalue = str_replace( "(awos)", " Automated Weather Observation System", $newvalue );
-$newvalue = str_replace( "(aw)", " Automated Weather Station", $newvalue );
-$newvalue = str_replace( "(was", " (Automated Weather Station", $newvalue );
-$newvalue = str_replace( "NA:", " ", $newvalue ); 
-$newvalue = str_replace( "windy", "wendy", $newvalue ); 
-
-$newvalue = str_replace( "Lat:", "Latitude:  ", $newvalue ); 
-$newvalue = str_replace( "Lon:", ". Longitude:  ", $newvalue ); 
-$newvalue = str_replace( "Elev:", ". Elevation:  ", $newvalue ); 
-
-$newvalue = $cityupdate . $newvalue ;
-
-$errcode= strpos($newvalue, "NULL");
-$errcod2= strpos($newvalue, "meta");
-
-if ($errcode>0 or $errcod2>0 ) :
- $value="I'm sorry. No weather information is currently available for $city. Have a nice day. Good bye." ;
- $fd = fopen($tmptext, "w");
- if (!$fd) {
-  echo "<p>Unable to open temporary text file in /tmp for writing. \n";
-  exit;
- }
- $retcode = fwrite($fd,$value);
- fclose($fd);
- $retcode2 = system ("$tts -f  $tmptext -o $tmpwave") ;
- unlink ("$tmptext") ;
- $tmpwave = "tts/tts-$token" ;
- execute_agi("SET VARIABLE TMPWAVE $tmpwave");
- $txt = "mime-construct --file $log --to $email" ;
- if ($debug) :
-  fputs($stdlog, "\nSend to Email: " . $txt . "\n\n" );
- endif ;
- fclose($stdin);
- fclose($stdout);
- fclose($stdlog);
- if ($emaildebuglog) :
-// system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather ver. 2.1 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
-  system($txt) ;
- endif ;
- exit ;
-else  :
- $welcomereport =  $newvalue ;
-endif ;
+$newvalue.=" Have a nice day. Good bye.";
+//======================== end of new code
 
 
-$beginpoint = "port_mp_ns";
-$endpoint   = "<u>Forecast" ;
-$start= strpos($value, "$beginpoint");  
-$finish= strpos($value, "$endpoint");  
-$length= $finish-$start;
-
-$forecastglance="<a href=\"http://www.srh.noaa.gov/port/" . substr($value, $start, $length) . "<u>Forecast at a Glance</u></a><br>";
-
-$value = str_replace( "select=1", "select=1", $value );
-$forecastdetailed="<a href=\"http://www.srh.noaa.gov/port/" . substr($value, $start, $length) . "<u>Detailed 7-day Forecast</u></a><br>";
-
-$value = str_replace( "select=1", "select=3", $value );
-$currentconditions="<a href=\"http://www.srh.noaa.gov/port/" . substr($value, $start, $length) . "<u>Current Conditions</u></a><br>";
-
-// Detailed currentconditions report
-$end=strpos($currentconditions,">");
-$currentconditions_link=substr($currentconditions,9,$end-10);
-$currentconditions_link = str_replace( " ", "%20", $currentconditions_link );
-$fd = fopen($currentconditions_link, "r");
-if (!$fd) {
- echo "<p>Unable to open web connection. \n";
- exit;
-}
-$currentconditions_report = "";
-while(!feof($fd)){
-        $currentconditions_report .= fread($fd, 4096);
-}
-fclose($fd);
-$start= strpos($currentconditions_report, "Weather:");
-$currentconditions_report=substr($currentconditions_report,$start);
-$end=strpos($currentconditions_report, "<hr>");
-$currentconditions_report="Current Weather Conditions". substr($currentconditions_report,7,$end-7);
-$currentconditions_report = str_replace( " in<br>", " inches<br>", $currentconditions_report);
-$currentconditions_report = str_replace( " in.", " inches ", $currentconditions_report);
-$currentconditions_report = str_replace( "mb", "millibars ", $currentconditions_report);
-$currentconditions_report = str_replace( "(", ", ", $currentconditions_report);
-$currentconditions_report = str_replace( ")", ". ", $currentconditions_report);
-$currentconditions_report = str_replace( "Barometer", "Barometric Pressure", $currentconditions_report );
-$currentconditions_report = str_replace( "&deg;F", " degrees fair in height ", $currentconditions_report );
-$currentconditions_report = str_replace( "&deg;C", " degrees centigrade ", $currentconditions_report );
-$currentconditions_report = str_replace( "%", " per cent ", $currentconditions_report );
-$currentconditions_report = str_replace( "mi.", " miles. ", $currentconditions_report );
-$currentconditions_report = str_replace( "MPH", " miles per hour ", $currentconditions_report );
-$currentconditions_report = str_replace( "Vrbl", "Variable at ", $currentconditions_report );
-$currentconditions_report = str_replace( "Wind Speed", "Wind Direction and Speed", $currentconditions_report );
-$currentconditions_report = str_replace( " E ", " From the East at ", $currentconditions_report );
-$currentconditions_report = str_replace( " NE ", " From the North East at ", $currentconditions_report );
-$currentconditions_report = str_replace( " W ", " From the West at ", $currentconditions_report );
-$currentconditions_report = str_replace( " NW ", " From the North West at ", $currentconditions_report );
-$currentconditions_report = str_replace( " N ", " From the North at ", $currentconditions_report );
-$currentconditions_report = str_replace( " S ", " From the South at ", $currentconditions_report );
-$currentconditions_report = str_replace( " SE ", " From the South East at ", $currentconditions_report );
-$currentconditions_report = str_replace( " SW ", " From the South West at ", $currentconditions_report );
-$currentconditions_report = str_replace( " G ", " gusting to ", $currentconditions_report );
-$currentconditions_report = str_replace( ".00", "", $currentconditions_report );
-$currentconditions_report = str_replace( "NA", " currently unavailable ", $currentconditions_report );
-$currentconditions_report = str_replace( "NULL", " currently unavailable ", $currentconditions_report );
-$currentconditions_report = str_replace( "windy", "wendy", $currentconditions_report );
-$currentconditions_report = str_replace( "<br>", ".", $currentconditions_report);
-$currentconditions_report = str_replace( "/", " and ", $currentconditions_report );
-$currentconditions_report = str_replace( ". ,", ". ", $currentconditions_report);
-$currentconditions_report = str_replace( ". .", ". ", $currentconditions_report);
-// end of Detailed current conditions report
-
-
-// Detailed weather forecast
-$end=strpos($forecastdetailed,">");
-$forecastdetailed_link=substr($forecastdetailed,9,$end-10);
-$forecastdetailed_link = str_replace( " ", "%20", $forecastdetailed_link );
-$fd = fopen($forecastdetailed_link, "r");
-if (!$fd) {
- echo "<p>Unable to open web connection. \n";
- exit;
-}
-$forecastdetailed_report = "";
-while(!feof($fd)){
-        $forecastdetailed_report .= fread($fd, 4096);
-}
-fclose($fd);
-$start= strpos($forecastdetailed_report, "</div>");
-$forecastdetailed_report=substr($forecastdetailed_report,$start);
-$end=strpos($forecastdetailed_report, "<hr>") ;
-$forecastdetailed_report="Here's the latest forecast. " . substr($forecastdetailed_report,7,$end-7);
-$forecastdetailed_report = str_replace( "<b>", " ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( "</b>", " ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( " in<br>", " inches<br>", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( " in.", " inches ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( "mb", "millibars ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( "(", ", ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( ")", ". ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( "Barometer", "Barometric Pressure", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "&deg;F", " degrees fair in height ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "&deg;C", " degrees centigrade ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "%", " per cent ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "mi.", " miles. ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "MPH", " miles per hour ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "mph", " miles per hour ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "Vrbl", "Variable at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "Wind Speed", "Wind Direction and Speed", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " E ", " From the East at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " NE ", " From the North East at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " W ", " From the West at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " NW ", " From the North West at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " N ", " From the North at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " S ", " From the South at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " SE ", " From the South East at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " SW ", " From the South West at ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( " G ", " gusting to ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( ".00", "", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "NA", " currently unavailable ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "NULL", " currently unavailable ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "windy", "wendy", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "<br>", ".",$forecastdetailed_report);
-$forecastdetailed_report = str_replace( "/", " and ", $forecastdetailed_report );
-$forecastdetailed_report = str_replace( "...", ". ", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( ". .", ".", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( ". ,", ".", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( ".. .", ".", $forecastdetailed_report);
-$forecastdetailed_report = str_replace( "..", ".", $forecastdetailed_report);
-$forecastdetailed_report = substr($forecastdetailed_report,0,-2) . " That concludes the detailed weather forecast. Have a nice day. Goodbye." ;
-// end of Detailed weather forecast
-
-if ($debug) :
-fputs($stdlog, "\nSummary: " . $welcomereport . "\n\n" );
-endif ;
-
-if ($debug) :
-fputs($stdlog, "\nCurrent Conditions: " . $currentconditions_report . "\n\n" );
-endif ;
-
-if ($debug) :
-fputs($stdlog, "\nForecast: " . $forecastdetailed_report . "\n\n" );
-endif ;
-
-
-// ------------
-
-$value = $welcomereport . $currentconditions_report . $forecastdetailed_report ;
-$value = ereg_replace("  *([,.:])", "\\1", $value);
-
-
-//--------------
+// ============ DONT DELETE BELOW HERE
 
 
 $fd = fopen($tmptext, "w"); 
@@ -626,7 +457,7 @@ if (!$fd) {
  echo "<p>Unable to open temporary text file in /tmp for writing. \n"; 
  exit; 
 } 
-$retcode = fwrite($fd,$value);	
+$retcode = fwrite($fd,$newvalue);	
 fclose($fd);
 
 $msg = chr(34) . "Your report was successfully downloaded. Please stand bye." . chr(34) ;
