@@ -25,7 +25,7 @@ function weatherzip_weatherzip($c) {
 	global $asterisk_conf;
 
 	$date = weatheroptions_getconfig();
-	$ttsengine = "noah-".($date[0]);
+	$ttsengine = $date[0];
 	
 
 	$id = "app-weatherzip"; // The context to be included

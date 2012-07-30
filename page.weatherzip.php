@@ -17,8 +17,7 @@ if(count($_POST)){
 }
 	$date = weatheroptions_getconfig();
 	$selected = ($date[0]);
-#print_r($selected);
-#	die();
+
 
 //  Get current featurecode from FreePBX registry
 $fcc = new featurecode('weatherzip', 'weatherzip');
@@ -33,20 +32,29 @@ Current conditions and a seven-day forecast for the chosen city then will be ret
 The feature code to access this service is currently set to <b><?PHP print $featurecode; ?></b>.  This value can be changed in Feature Codes. <br>
 
 	<tr><td colspan="2"><br><h5><?php echo _("TTS Engine")?>:<hr></h5></td></tr>
-<tr>Select the Text To Speach engine you wish the Weather by Zip program to use to audio render your reports.<br><br>
-		<td><a href="#" class="info"><?php echo _("Choose an engine")?>:<span><?php echo _("List of TTS engines detected on the server. Choose the one you want to use for the current sentence.")?></span></a></td>
+<tr>Select the Text To Speach engine and Forecast source combination you wish the Weather by Zip program to use.<br>The module does not check to see if the selected TTS engine is present, ensure to choose an engine that is installed on the system.<br><br>
+		<td><a href="#" class="info"><?php echo _("Choose a service and engine")?>:<span><?php echo _("List of TTS engines and weather services.")?></span></a></td>
 		<td>
 		<select size="1" name="engine">
 <?php
-echo "<option".(($date[0]==flite)?' selected':'').">flite</option>\n";
-echo "<option".(($date[0]==swift)?' selected':'').">swift</option>\n";
+echo "<option".(($date[0]=='noaa-flite')?' selected':'').">noaa-flite</option>\n";
+echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
+echo "<option".(($date[0]=='googlew-flite')?' selected':'').">googlew-flite</option>\n";
+echo "<option".(($date[0]=='googlew-swift')?' selected':'').">googlew-swift</option>\n";
+echo "<option".(($date[0]=='googlew-googletts')?' selected':'').">googlew-googletts</option>\n";
 ?>
 </select>
+<br><br>key:<br>
+<b>noaa</b> - National Oceanic and Atmospheric Administration (USA weather service)<br>
+<b>googlew</b> - Free Google Weather API<br>
+<b>flite</b> - Asterisk Flite Text to Speech Engine<br>
+<b>swift</b> - Cepstral Swift Text to Speech Engine<br>
+<b>googletts</b> - Google text to speech engine by Lefteris Zafiris<br>
 		</td>
 	</tr><hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
 <center><br>
-The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a></center>
+The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a>.  Support, documentation and current versions are available at the module <a target="_blank" href="https://github.com/POSSA/freepbx-weather-by-zip">dev site</a></center>
 <?php
-print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.';
+print '<p align="center" style="font-size:11px;">The Weather by Zip and Google Weather scripts were created and are currently maintaned by <a target="_blank" href="http://www.nerdvittles.com">Nerd Vittles</a>.';
 
 ?>

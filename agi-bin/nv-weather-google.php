@@ -1,9 +1,20 @@
 #!/usr/bin/php -q
-<?php
+<?
  ob_implicit_flush(false);
  error_reporting(0);
  set_time_limit(300);
+
 //   Nerd Vittles ZIP Weather ver. 5.0, (c) Copyright Ward Mundy, 2007-2012. All rights reserved.
+
+//                    This software is licensed under the GPL2 license.
+//
+//   Material alteration of the spoken content provided by this application is strictly prohibited.
+//
+//   For a copy of license, visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+//    For additional information, contact us: http://pbxinaflash.com/about/comment.php
+
+
 
 //-------- DON'T CHANGE ANYTHING ABOVE THIS LINE ----------------
 
@@ -159,13 +170,81 @@ break;
 }  
 
 $zip = $_SERVER["argv"][1];
+$zip=trim($zip);
+
+$zip = str_replace( "letter eye", "i", $zip);
+$zip = str_replace( "letter to", "q", $zip);
+$zip = str_replace( "letter im", "m", $zip);
+$zip = str_replace( "letter in", "n", $zip);
+$zip = str_replace( "letter and", "n", $zip);
+$zip = str_replace( "letter page", "h", $zip);
+$zip = str_replace( "letter you", "u", $zip);
+$zip = str_replace( "letter text", "x", $zip);
+
+$zip = str_replace( "zero ", "0 ", $zip);
+$zip = str_replace( "one ", "1 ", $zip);
+$zip = str_replace( "won ", "1 ", $zip);
+$zip = str_replace( "two ", "2 ", $zip);
+$zip = str_replace( "too ", "2 ", $zip);
+$zip = str_replace( "to ", "2 ", $zip);
+$zip = str_replace( "tube ", "2 ", $zip);
+$zip = str_replace( "three ", "3 ", $zip);
+$zip = str_replace( "four ", "4 ", $zip);
+$zip = str_replace( "fore ", "4 ", $zip);
+$zip = str_replace( "five ", "5 ", $zip);
+$zip = str_replace( "six ", "6 ", $zip);
+$zip = str_replace( "sex ", "6 ", $zip);
+$zip = str_replace( "sixth ", "6 ", $zip);
+$zip = str_replace( "seven ", "7 ", $zip);
+$zip = str_replace( "eight ", "8 ", $zip);
+$zip = str_replace( "ate ", "8 ", $zip);
+$zip = str_replace( "nine ", "9 ", $zip);
+
+$zip = str_replace( "letters", "", $zip);
+$zip = str_replace( "letter", "", $zip);
+
+$zip = str_replace( "numbers", "", $zip);
+$zip = str_replace( "number", "", $zip);
+$zip = str_replace( "x ray", "xray", $zip);
+$zip = str_replace( "x-ray", "xray", $zip);
+$zip = str_replace( "fanatic", "phonetic", $zip);
+$zip = str_replace( "fanatics", "phonetic", $zip);
+
+if ( strpos($zip,"phonetic")>0 or substr($zip,0,8)=="phonetic"  ) :
+ $zip = str_replace( "phonetic ", "", $zip);
+ $zip = str_replace( "phonetic", "", $zip);
+ $pos=0;
+ $newzip=$zip." ";
+ $m=strpos($newzip," ");
+ while ($m<>0){
+  $testword = substr($newzip,0,$m);
+  echo $testword;
+  echo chr(10);
+  if (strlen($testword)>1):
+   $zip = str_replace( $testword, substr($testword,0,1), $zip);
+  endif;
+  $newzip=substr($newzip,$m+1);
+  $m=strpos($newzip," ");
+ }
+ $zip = str_replace( " ", "", $zip);
+ if (strlen($zip)>6) :
+  $zip=substr($zip,0,6);
+ endif ;
+endif;
+
+if ( $zip=="0" or $zip=="1" or $zip=="2" or $zip=="3" or $zip=="4" or $zip=="5" or $zip=="6" or $zip=="7" or $zip=="8" or $zip=="9"  ):
+ $zip2=$canada[$zip];
+ $zip=$zip2;
+endif;
 
 if ($debug) :
-fputs($stdlog, "ZIP Code: " . $zip . "\n" );
+fputs($stdlog, "Location: " . $zip . "\n" );
 endif ;
 
 
 $query = "http://www.google.com/ig/api?weather=$zip";
+$query = trim(str_replace( " ", "%20", $query));
+
 
 $fd = fopen($query, "r");
 if (!$fd) {
@@ -196,7 +275,7 @@ if ($found>0) :
   fclose($fd);
  else :
   $zip=substr($zip,0,1).".".substr($zip,1,1).".".substr($zip,2,1).".".substr($zip,3,1).".".substr($zip,4,1);
-  $msg="I'm sorry but no weather data is available for $zip. Thank you for calling. Goodbye.";
+  $msg=chr(34)."I'm sorry but no weather data is available for $zip. Thank you for calling. Goodbye.".chr(34);
 //  echo $msg;
 //  echo chr(10);
   execute_agi("SET VARIABLE WEATHER $msg");
