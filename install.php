@@ -1,10 +1,10 @@
-Installing U.S. Weather by Zip Code<br>
+Installing U.S. Weather by Zip Code Module<br>
 <h5>Zip Code Database (v1.0)</h5>
-This zip database is provided free to anyone who wants<br>
-it with the request that anyone who benefits from it<br>
-please drop me a quick email and let me know how<br>
-you're using it. Also, if you wish to contribute to<br>
-this project or improve upon the database that is<br> 
+This zip database is provided free to anyone who wants
+it with the request that anyone who benefits from it
+please drop me a quick email and let me know how
+you're using it. Also, if you wish to contribute to
+this project or improve upon the database that is 
 also welcome.<br>novak@linenoize.com<br>
 <?php
 if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
@@ -19,18 +19,40 @@ if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
 
 $sql ="INSERT INTO weatheroptions (engine, defaultzip) ";
 $sql .= "               VALUES ('flite',        '12345')";
-
 $check = $db->query($sql);
 if (DB::IsError($check)) {
         die_freepbx( "Can not create default values in `weatheroptions` table: " . $check->getMessage() .  "\n");
 }
 
+// Add dialplan include to asterisk conf file
 $filename = '/etc/asterisk/extensions_custom.conf';
 $includecontent = "#include custom_weatherzip.conf\n";
 
-// Let's make sure the file exists and is writable first.
-if (is_writable($filename)) {
+// First we need to look for existing occurances of the include line from past sloppy uninstall/upgrade and remove all of them
+function replace_file($path, $string, $replace)
+{
+    set_time_limit(0);
+    if (is_file($path) === true)
+    {
+        $file = fopen($path, 'r');
+        $temp = tempnam('./', 'tmp');
+        if (is_resource($file) === true)
+        {
+            while (feof($file) === false)
+            {
+                file_put_contents($temp, str_replace($string, $replace, fgets($file)), FILE_APPEND);
+            }
+            fclose($file);
+        }
+        unlink($path);
+    }
+    return rename($temp, $path);
+}
 
+replace_file($filename, $includecontent, '');
+
+// Now add back include line
+if (is_writable($filename)) {
  
     if (!$handle = fopen($filename, 'a')) {
          echo "Cannot open file ($filename)";
