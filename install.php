@@ -18,7 +18,7 @@ if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
 <?php
 
 $sql ="INSERT INTO weatheroptions (engine, defaultzip) ";
-$sql .= "               VALUES ('flite',        '12345')";
+$sql .= "               VALUES ('noaa-flite',        '12345')";
 $check = $db->query($sql);
 if (DB::IsError($check)) {
         die_freepbx( "Can not create default values in `weatheroptions` table: " . $check->getMessage() .  "\n");
