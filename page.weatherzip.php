@@ -18,11 +18,18 @@ if(count($_POST)){
 	$date = weatheroptions_getconfig();
 	$selected = ($date[0]);
 
-
 //  Get current featurecode from FreePBX registry
 $fcc = new featurecode('weatherzip', 'weatherzip');
 $featurecode = $fcc->getCodeActive(); 
 
+// check to see if user has automatic updates enabled
+$cm =& cronmanager::create($db);
+$online_updates = $cm->updates_enabled() ? true : false;
+
+// check if new version of module is available
+if ($online_updates && $foo = weatherzip_vercheck()) {
+	print "<br>A <b>new version</b> of this module is available from the <a target='_blank' href='http://pbxossa.org'>PBX Open Source Software Alliance</a><br>";
+	}
 
 ?>
 <form method="POST" action="">
@@ -31,29 +38,32 @@ Weather by Zip Code allow you to retrieve current weather information from any t
 Current conditions and a seven-day forecast for the chosen city then will be retrieved from the National Weather Service and played back to your telephone using the selected text-to-speech engine. <br><br>
 The feature code to access this service is currently set to <b><?PHP print $featurecode; ?></b>.  This value can be changed in Feature Codes. <br>
 
-	<tr><td colspan="2"><br><h5><?php echo _("TTS Engine")?>:<hr></h5></td></tr>
-<tr>Select the Text To Speach engine and Forecast source combination you wish the Weather by Zip program to use.<br>The module does not check to see if the selected TTS engine is present, ensure to choose an engine that is installed on the system.<br><br>
-		<td><a href="#" class="info"><?php echo _("Choose a service and engine")?>:<span><?php echo _("List of TTS engines and weather services.")?></span></a></td>
-		<td>
-		<select size="1" name="engine">
+<br><h5>User Data:<hr></h5>
+Select the Text To Speach engine and Forecast source combination you wish the Weather by Zip program to use.<br>The module does not check to see if the selected TTS engine is present, ensure to choose an engine that is installed on the system.<br><br>
+<a href="#" class="info">Choose a service and engine:<span>Choose from the list of supported TTS engines and weather services</span></a>
+
+<select size="1" name="engine">
 <?php
 echo "<option".(($date[0]=='noaa-flite')?' selected':'').">noaa-flite</option>\n";
 echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
-echo "<option".(($date[0]=='googlew-flite')?' selected':'').">googlew-flite</option>\n";
-echo "<option".(($date[0]=='googlew-swift')?' selected':'').">googlew-swift</option>\n";
-echo "<option".(($date[0]=='googlew-googletts')?' selected':'').">googlew-googletts</option>\n";
+echo "<option".(($date[0]=='googlew-flite')?' selected':'').">wunderground-flite</option>\n";
+echo "<option".(($date[0]=='googlew-swift')?' selected':'').">wunderground-swift</option>\n";
+echo "<option".(($date[0]=='googlew-googletts')?' selected':'').">wunderground-googletts</option>\n";
 ?>
 </select>
+<br><a href="#" class="info">Wunderground API KEY:<span>Input free API key from registration with http://wunderground.com weather service</span></a>
+<input type="text" name="wgroundkey" size="27" value="<?php echo $date[1]; ?>">  <a href="javascript: return false;" class="info"> 
 <br><br>key:<br>
 <b>noaa</b> - National Oceanic and Atmospheric Administration (USA weather service)<br>
-<b>googlew</b> - Free Google Weather API<br>
+<b>wunderground</b> - Weather API provided by wunderground.com<br>
 <b>flite</b> - Asterisk Flite Text to Speech Engine<br>
 <b>swift</b> - Cepstral Swift Text to Speech Engine<br>
 <b>googletts</b> - Google text to speech engine by Lefteris Zafiris<br>
-		</td>
-	</tr><hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
+		
+<hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
+
 <center><br>
-The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a>.  Support, documentation and current versions are available at the module <a target="_blank" href="https://github.com/POSSA/freepbx-weather-by-zip">dev site</a></center>
+The module is maintained by the developer community at <a target="_blank" href="http://pbxossa.org"> PBX Open Source Software Alliance</a>.  Support, documentation and current versions are available at the module <a target="_blank" href="https://github.com/POSSA/freepbx-weather-by-zip">dev site</a></center>
 <?php
 print '<p align="center" style="font-size:11px;">The Weather by Zip and Google Weather scripts were created and are currently maintaned by <a target="_blank" href="http://www.nerdvittles.com">Nerd Vittles</a>.';
 

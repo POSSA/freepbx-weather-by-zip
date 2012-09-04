@@ -19,7 +19,7 @@ if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
 }
 $tts_astsnd_path = $astlib_path."/sounds/tts/";
 
-
+/* this function unused??
 function weatherzip_weatherzip($c) {
 	global $ext;
 	global $asterisk_conf;
@@ -32,7 +32,8 @@ function weatherzip_weatherzip($c) {
 	
 	$ext->addInclude('from-internal-additional', $id); // Add the include from from-internal
 	$ext->add($id, $c, '', new ext_goto('1', 's', $ttsengine));
-} 
+}
+  end unused section */
 
 function weatherzip_get_config($engine) {
 	$modulename = 'weatherzip';
@@ -63,10 +64,7 @@ function weatherzip_get_config($engine) {
 }
 
 function weatheroptions_getconfig() {
-	#print_r($results);
-	#die();
 	require_once 'DB.php';
-
 	$sql = "SELECT * FROM weatheroptions LIMIT 1";
 	$results= sql($sql, "getAll");
 	$tmp = $results[0][4];
@@ -78,25 +76,46 @@ function weatheroptions_getconfig() {
 	return $results[0];
 }
 
-function weatheroptions_saveconfig($c) {
+function weatheroptions_saveconfig() {
 
 	require_once 'DB.php';
 
 	# clean up
 	$engine = mysql_escape_string($_POST['engine']);
-	$defaultzip = mysql_escape_string($_POST['defaultzip']);
+	$wgroundkey = mysql_escape_string($_POST['wgroundkey']);
 	
 
 
 	# Make SQL thing
 	$sql = "UPDATE `weatheroptions` SET";
-	$sql .= " `engine`='{$engine}'";
+	$sql .= " `engine`='{$engine}',";
+	$sql .= " `wgroundkey`='{$wgroundkey}'";
 	$sql .= " LIMIT 1;";
 
 	sql($sql);
 	needreload();
 }
+
 $tts_installed = array();
 $tts_engines = array("text2wave", "flite", "swift");
-
 $config = parse_amportal_conf( "/etc/amportal.conf" );
+
+
+function weatherzip_vercheck() {
+// compare version numbers of local module.xml and remote module.xml 
+// returns true if a new version is available
+	$newver = false;
+	if ( function_exists(xml2array)){
+		$module_local = xml2array("modules/weatherzip/module.xml");
+		$module_remote = xml2array("https://raw.github.com/POSSA/freepbx-weather-by-zip/master/module.xml");
+		if ( $foo= empty($module_local) or $bar = empty($module_remote) )
+			{
+			//  if either array is empty skip version check
+			}
+		else if ( $module_remote[module][version] > $module_local[module][version])
+			{
+			$newver = true;
+			}
+		return ($newver);
+		}
+	}

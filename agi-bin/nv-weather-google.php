@@ -4,7 +4,7 @@
  error_reporting(0);
  set_time_limit(300);
 
-//   Nerd Vittles ZIP Weather ver. 5.0, (c) Copyright Ward Mundy, 2007-2012. All rights reserved.
+//   Nerd Vittles Weather by Weather Underground ver. 5.1, (c) Copyright Ward Mundy, 2007-2012. All rights reserved.
 
 //                    This software is licensed under the GPL2 license.
 //
@@ -14,27 +14,25 @@
 //
 //    For additional information, contact us: http://pbxinaflash.com/about/comment.php
 
+/************** FreePBX Weather By Zip Module **************
+Additions and alterations made to the original Nerdvittles file are commented with #module
+PBX Open Source Software Alliance
+4 September 2012
+************* FreePBX Weather By Zip Module **************/
+
+//*** start code added for #module compatibility
+$bootstrap_settings['freepbx_auth'] = false;
+if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
+include_once('/etc/asterisk/freepbx.conf');
+}
+//*** end code added for #module compatibility
 
 
 //-------- DON'T CHANGE ANYTHING ABOVE THIS LINE ----------------
 
-
-// You can change the Canadian cities and Postal Codes below to meet your needs.
-// 0-9 are used to match ZIP Codes 00000 through 00009 entered by telephone.
-// No ZIP codes above 00009 are safe to tinker with. Reserved for use by USPS.
-// Make sure you pick legitimate Canadian postal codes. There's NO error checking.
-// Test code with a browser first, e.g. http://www.google.com/ig/api?weather=K1N6N5
-
- $canada[0] = "K1N6N5" ; // Ottawa
- $canada[1] = "V5K0A1" ; // Vancouver
- $canada[2] = "T1L1B8" ; // Banff
- $canada[3] = "T6P1X2" ; // Edmonton
- $canada[4] = "B3P2L5" ; // Halifax
- $canada[5] = "N5V0A5" ; // London
- $canada[6] = "H2Y1C6" ; // Montreal
- $canada[7] = "G1C2X4" ; // Quebec City
- $canada[8] = "M3H6A7" ; // Toronto
- $canada[9] = "R2C0A1" ; // Winnipeg
+// #module  following line is changed to get the API key from the GUI
+// $apikey ="12345" ;
+ $apikey ="12345" ;
 
  $debug = 1;
  $newlogeachdebug = 1;
@@ -42,6 +40,10 @@
  $email = "yourname@yourdomain" ;
 
 //-------- DON'T CHANGE ANYTHING BELOW THIS LINE ----------------
+
+
+
+
 
 $states_name  = array('AL'=>"Alabama",'AK'=>"Alaska",'AZ'=>"Arizona",'AR'=>"Arkansas",'CA'=>"California",'CO'=>"Colorado",'CT'=>"Connecticut",'DE'=>"Delaware",'FL'=>"Florida",'GA'=>"Georgia",'HI'=>"Hawaii",'ID'=>"Idaho",'IL'=>"Illinois", 'IN'=>"Indiana", 'IA'=>"Iowa",  'KS'=>"Kansas",'KY'=>"Kentucky",'LA'=>"Louisiana",'ME'=>"Maine",'MD'=>"Maryland", 'MA'=>"Massachusetts",'MI'=>"Michigan",'MN'=>"Minnesota",'MS'=>"Mississippi",'MO'=>"Missouri",'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",'OK'=>"Oklahoma", 'OR'=>"Oregon",'PA'=>"Pennsylvania",'RI'=>"Rhode Island",'SC'=>"South Carolina",'SD'=>"South Dakota",'TN'=>"Tennessee",'TX'=>"Texas",'UT'=>"Utah",'VT'=>"Vermont",'VA'=>"Virginia",'WA'=>"Washington",'DC'=>"Washington D.C.",'WV'=>"West Virginia",'WI'=>"Wisconsin",'WY'=>"Wyoming",'AB'=>"Alberta",'BC'=>"British Columbia",'MB'=>"Manitoba",'NB'=>"New Brunswick",'WY'=>"Wyoming",'NL'=>"Newfoundland",'WY'=>"Wyoming",'NT'=>"Northwest Territories",'NS'=>"Nova Scotia",'NU'=>"Nunavut",'ON'=>"Ontario",'PE'=>"Prince Edward Island",'QC'=>"Quebec",'SK'=>"Saskatchewan",'YT'=>"Yukon");
 $states_abbr = array();
@@ -66,7 +68,7 @@ return $val ;
 }
 
 
-$log = "/var/log/asterisk/nv-weather-google.txt" ;
+$log = "/var/log/asterisk/nv-weather-underground.txt" ;
 if ($debug and $newlogeachdebug) :
  if (file_exists($log)) :
   unlink($log) ;
@@ -78,7 +80,7 @@ endif ;
  $stdout = fopen( 'php://stdout', 'w' ); 
 
 if ($debug) :
-  fputs($stdlog, "Nerd Vittles Google Weather ver. 5.0 (c) Copyright 2007-2012, Ward Mundy. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
+  fputs($stdlog, "Nerd Vittles Weather by Weather Underground ver. 5.1 (c) Copyright 2007-2012, Ward Mundy. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
 endif ;
 
 function read() {  
@@ -172,83 +174,70 @@ break;
 $zip = $_SERVER["argv"][1];
 $zip=trim($zip);
 
-$zip = str_replace( "letter eye", "i", $zip);
-$zip = str_replace( "letter to", "q", $zip);
-$zip = str_replace( "letter im", "m", $zip);
-$zip = str_replace( "letter in", "n", $zip);
-$zip = str_replace( "letter and", "n", $zip);
-$zip = str_replace( "letter page", "h", $zip);
-$zip = str_replace( "letter you", "u", $zip);
-$zip = str_replace( "letter text", "x", $zip);
-
-$zip = str_replace( "zero ", "0 ", $zip);
-$zip = str_replace( "one ", "1 ", $zip);
-$zip = str_replace( "won ", "1 ", $zip);
-$zip = str_replace( "two ", "2 ", $zip);
-$zip = str_replace( "too ", "2 ", $zip);
-$zip = str_replace( "to ", "2 ", $zip);
-$zip = str_replace( "tube ", "2 ", $zip);
-$zip = str_replace( "three ", "3 ", $zip);
-$zip = str_replace( "four ", "4 ", $zip);
-$zip = str_replace( "fore ", "4 ", $zip);
-$zip = str_replace( "five ", "5 ", $zip);
-$zip = str_replace( "six ", "6 ", $zip);
-$zip = str_replace( "sex ", "6 ", $zip);
-$zip = str_replace( "sixth ", "6 ", $zip);
-$zip = str_replace( "seven ", "7 ", $zip);
-$zip = str_replace( "eight ", "8 ", $zip);
-$zip = str_replace( "ate ", "8 ", $zip);
-$zip = str_replace( "nine ", "9 ", $zip);
-
-$zip = str_replace( "letters", "", $zip);
-$zip = str_replace( "letter", "", $zip);
-
-$zip = str_replace( "numbers", "", $zip);
-$zip = str_replace( "number", "", $zip);
-$zip = str_replace( "x ray", "xray", $zip);
-$zip = str_replace( "x-ray", "xray", $zip);
-$zip = str_replace( "fanatic", "phonetic", $zip);
-$zip = str_replace( "fanatics", "phonetic", $zip);
-
-if ( strpos($zip,"phonetic")>0 or substr($zip,0,8)=="phonetic"  ) :
- $zip = str_replace( "phonetic ", "", $zip);
- $zip = str_replace( "phonetic", "", $zip);
- $pos=0;
- $newzip=$zip." ";
- $m=strpos($newzip," ");
- while ($m<>0){
-  $testword = substr($newzip,0,$m);
-  echo $testword;
-  echo chr(10);
-  if (strlen($testword)>1):
-   $zip = str_replace( $testword, substr($testword,0,1), $zip);
-  endif;
-  $newzip=substr($newzip,$m+1);
-  $m=strpos($newzip," ");
- }
- $zip = str_replace( " ", "", $zip);
- if (strlen($zip)>6) :
-  $zip=substr($zip,0,6);
- endif ;
-endif;
-
-if ( $zip=="0" or $zip=="1" or $zip=="2" or $zip=="3" or $zip=="4" or $zip=="5" or $zip=="6" or $zip=="7" or $zip=="8" or $zip=="9"  ):
- $zip2=$canada[$zip];
- $zip=$zip2;
-endif;
-
 if ($debug) :
 fputs($stdlog, "Location: " . $zip . "\n" );
 endif ;
 
 
-$query = "http://www.google.com/ig/api?weather=$zip";
-$query = trim(str_replace( " ", "%20", $query));
+$place = $zip;
+
+$zip=str_replace("south carolina","SC",$zip);
+$zip=str_replace("new hampshire","NH",$zip);
+$zip=str_replace("new york","NY",$zip);
+$zip=str_replace("new jersey","NJ",$zip);
+$zip=str_replace("new mexico","NM",$zip);
+$zip=str_replace("north carolina","NC",$zip);
+$zip=str_replace("north dakota","ND",$zip);
+$zip=str_replace("rhode island","RI",$zip);
+$zip=str_replace("south dakota","SD",$zip);
+$zip=str_replace("west virginia","WV",$zip);
+$zip=str_replace("district of columbia","DC",$zip);
+$zip=str_replace("american samoa","american_samoa",$zip);
+$zip=str_replace("cape verde","cape_verde",$zip);
+$zip=str_replace("cayman islands","cayman_islands",$zip);
+$zip=str_replace("costa rica","costa_rica",$zip);
+$zip=str_replace("czech republic","czech_republic",$zip);
+$zip=str_replace("dominican republic","dominican_republic",$zip);
+$zip=str_replace("el salvador","el_salvador",$zip);
+$zip=str_replace("hong kong","hong_kong",$zip);
+$zip=str_replace("south korea","south_korea",$zip);
+$zip=str_replace("new zealand","new_zealand",$zip);
+$zip=str_replace("puerto rico","PR",$zip);
+$zip=str_replace("russian federation","russian_federation",$zip);
+$zip=str_replace("saint kitts","saint_kitts",$zip);
+$zip=str_replace("saint lucia","saint_lucia",$zip);
+$zip=str_replace("saudi arabia","saudi_arabia",$zip);
+$zip=str_replace("south africa","south_africa",$zip);
+$zip=str_replace("united arab emirates","united_arab_emirates",$zip);
+$zip=str_replace("united states","united_states",$zip);
+$zip=str_replace("united kingdom","united_kingdom",$zip);
+$zip=str_replace("virgin islands","virgin_islands",$zip);
+
+$sp1=strrpos($zip," ");
+
+$city = trim(substr($zip,0,$sp1));
+$city = trim(str_replace( " ", "_", $city));
+
+$state = trim(substr($zip,$sp1+1));
+
+if ($apikey=="12345") :
+ $msg=chr(34)."Sorry but You first must configure N V weather google dot P-H-P with your weather underground key: then try again. ".chr(34);
+ execute_agi("SET VARIABLE WEATHER $msg");
+ exit;
+endif ;
+
+$forecast="Here are the latest weather conditions and the 3 day forecast for $place. Brought to you by Weather Underground and Nerd Vittles. ";
+
+$query = "http://api.wunderground.com/api/$apikey/conditions/q/$state/$city.json";
+
+$query = trim(str_replace( " ", "_", $query));
 
 
 $fd = fopen($query, "r");
 if (!$fd) {
  echo "<p>Unable to open web connection. \n";
+ $msg=chr(34)."I'm sorry. No weather information currently is available for $place. Please try again later.".chr(34);
+ execute_agi("SET VARIABLE WEATHER $msg");
  exit;
 }
 $value = "";
@@ -257,284 +246,243 @@ while(!feof($fd)){
 }
 fclose($fd);
 
-$found=strpos($value,"problem_cause");
-if ($found>0) :
- if ( substr($zip,0,4)=="0000" ) :
-  $city = substr($zip,4,1);
-  $zip = $canada[$city];
-  $query = "http://www.google.com/ig/api?weather=$zip";
-  $fd = fopen($query, "r");
-  if (!$fd) {
-   echo "<p>Unable to open web connection. \n";
-   exit;
-  }
-  $value = "";
-  while(!feof($fd)){
-        $value .= fread($fd, 4096);
-  }
-  fclose($fd);
- else :
-  $zip=substr($zip,0,1).".".substr($zip,1,1).".".substr($zip,2,1).".".substr($zip,3,1).".".substr($zip,4,1);
-  $msg=chr(34)."I'm sorry but no weather data is available for $zip. Thank you for calling. Goodbye.".chr(34);
-//  echo $msg;
-//  echo chr(10);
-  execute_agi("SET VARIABLE WEATHER $msg");
-  exit;
- endif;
-endif;
+$pos = strpos($value,"querynotfound");
+if ($pos===false) :
+ $pos="good2go";
+else :
+ $msg=chr(34)."No weather information currently is available for $place: Please try again later.".chr(34);
+ execute_agi("SET VARIABLE WEATHER $msg");
+ exit;
+endif ;
 
-//echo $value;
-//echo chr(10).chr(10);
-
-$thetext="<city data=";
-$endtext=chr(34)."/>";
+$thetext=chr(34)."weather".chr(34).":".chr(34);
+$endtext=chr(34).",";
 $start= strpos($value, $thetext);
-//echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-//echo $start+strlen($thetext)+1;
-//echo chr(10);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),20);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
 $end=strpos($tmptext, $endtext);
-//echo $end . chr(10);
-$location = substr($tmptext,0,$end);
-//echo $location;
-$abbrev = substr($location,strlen($location)-2);
-$location = substr($location,0,strlen($location)-2).state($abbrev);
+#echo $end . chr(10);
+$current = substr($tmptext,0,$end);
 
-$location = "This weather forecast for $location brought to you by Google and Nerd Vittles. ";
-//echo $location.chr(10);
-
-
-$thetext="<temp_f data=";
-$endtext=chr(34)."/>";
+$thetext=chr(34)."temp_f".chr(34).":";
+$endtext=",";
 $start= strpos($value, $thetext);
-//echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-//echo $start+strlen($thetext)+1;
-//echo chr(10);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),20);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
 $end=strpos($tmptext, $endtext);
-//echo $end . chr(10);
-$tempf = substr($tmptext,0,$end);
-//echo $tempf;
-//echo chr(10);
+#echo $end . chr(10);
+$temp = substr($tmptext,0,$end);
 
-$thetext="<temp_c data=";
-$endtext=chr(34)."/>";
+$thetext=chr(34)."temp_c".chr(34).":";
+$endtext=",";
 $start= strpos($value, $thetext);
-//echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-//echo $start+strlen($thetext)+1;
-//echo chr(10);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),20);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
 $end=strpos($tmptext, $endtext);
-//echo $end . chr(10);
+#echo $end . chr(10);
 $tempc = substr($tmptext,0,$end);
-//echo $tempc;
-//echo chr(10);
 
-$temperature="Current temperature: $tempf degrees fahrenheit. $tempc degrees centigrade. ";
-//echo $temperature;
-//echo chr(10);
+$forecast = $forecast . "Currently: " . $current.". Temperature: ".$temp . " degrees fahrenheit. ".$tempc . " degrees centigrade. ";
 
-$thetext="<humidity data=";
-$endtext=chr(34)."/>";
+$thetext=chr(34)."relative_humidity".chr(34).":".chr(34);
+$endtext=chr(34).",";
 $start= strpos($value, $thetext);
-//echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-//echo $start+strlen($thetext)+1;
-//echo chr(10);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),20);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
 $end=strpos($tmptext, $endtext);
-//echo $end . chr(10);
+#echo $end . chr(10);
 $humidity = substr($tmptext,0,$end);
-$humidity = "Relative ".str_replace( "%", " per cent. ", $humidity );
-//echo $humidity;
-//echo chr(10);
+$humidity = trim(str_replace( "%", " per cent", $humidity));
 
-$thetext="<wind_condition data=";
-$endtext=chr(34)."/>";
+$forecast = $forecast . "Relative humidity: " . $humidity . ". ";
+
+$thetext=chr(34)."pressure_in".chr(34).":".chr(34);
+$endtext=chr(34).",";
+$start= strpos($value, $thetext);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),20);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
+$end=strpos($tmptext, $endtext);
+#echo $end . chr(10);
+$barometer = substr($tmptext,0,$end);
+
+$forecast = $forecast . "Barometric pressure: " . $barometer . " inches. ";
+
+$thetext=chr(34)."wind_string".chr(34).":".chr(34);
+$endtext=chr(34).",";
+$start= strpos($value, $thetext);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),200);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
+$end=strpos($tmptext, $endtext);
+#echo $end . chr(10);
+$thedata = substr($tmptext,0,$end);
+
+
+$thedata = trim(str_replace( "F ", " degrees Fahrenheit ", $thedata));
+$thedata = trim(str_replace( "F.", " degrees Fahrenheit.", $thedata));
+$thedata = trim(str_replace( "mph", " miles per hour", $thedata));
+$thedata = trim(str_replace( "MPH", " miles per hour", $thedata));
+$thedata = trim(str_replace( "%", " per cent ", $thedata));
+$thedata = trim(str_replace( " N ", " north ", $thedata));
+$thedata = trim(str_replace( " S ", " south ", $thedata));
+$thedata = trim(str_replace( " E ", " east ", $thedata));
+$thedata = trim(str_replace( " W ", " west ", $thedata));
+$thedata = trim(str_replace( " NE ", " northeast ", $thedata));
+$thedata = trim(str_replace( " NW ", " northwest ", $thedata));
+$thedata = trim(str_replace( " NNE ", " north northeast ", $thedata));
+$thedata = trim(str_replace( " NNW ", " north northwest ", $thedata));
+$thedata = trim(str_replace( " SE ", " southeast ", $thedata));
+$thedata = trim(str_replace( " SW ", " southwest ", $thedata));
+$thedata = trim(str_replace( " SSE ", " south southeast ", $thedata));
+$thedata = trim(str_replace( " SSW ", " south southwest ", $thedata));
+$thedata = trim(str_replace( " WSW ", " west southwest ", $thedata));
+$thedata = trim(str_replace( " WNW ", " west northwest ", $thedata));
+$thedata = trim(str_replace( " ENE ", " east northeast ", $thedata));
+$thedata = trim(str_replace( " ESE ", " east southeast ", $thedata));
+$thedata = trim(str_replace( "wind", "wend", $thedata));
+$thedata = trim(str_replace( "Wind", "Wend", $thedata));
+
+$forecast = $forecast . "Wend direction and speed: " . $thedata . ". ";
+
+$thetext=chr(34)."visibility_mi".chr(34).":".chr(34);
+$endtext=chr(34).",";
+$start= strpos($value, $thetext);
+#echo $start . chr(10);
+$tmptext = substr($value,$start+strlen($thetext),200);
+#echo $tmptext.chr(10);
+#echo $start+strlen($thetext)+1;
+#echo chr(10);
+$end=strpos($tmptext, $endtext);
+#echo $end . chr(10);
+$thedata = substr($tmptext,0,$end);
+
+$forecast = $forecast . "Visibility: " . $thedata . " miles. ";
+
+$query = "http://api.wunderground.com/api/$apikey/forecast/q/$state/$city.json";
+
+$query = trim(str_replace( " ", "_", $query));
+
+#echo $city ;
+#echo chr(10).chr(10);
+#echo $state ;
+#echo chr(10).chr(10);
+#echo $query;
+#echo chr(10).chr(10);
+
+
+$fd = fopen($query, "r");
+if (!$fd) {
+ echo "<p>Unable to open web connection. \n";
+ $msg=chr(34)."I'm sorry. No weather information currently is available for $place. Please try again later.".chr(34);
+ execute_agi("SET VARIABLE WEATHER $msg");
+ exit;
+}
+$value = "";
+while(!feof($fd)){
+        $value .= fread($fd, 4096);
+}
+fclose($fd);
+
+if ($value=="") :
+ $msg=chr(34)."I'm sorry. No weather information currently is available for $place. Please try again later.".chr(34);
+ execute_agi("SET VARIABLE WEATHER $msg");
+ exit;
+endif ;
+
+
+
+$forecast = $forecast . "Here is the 3 day forecast. ";
+
+$i = 1 ;
+
+while ($i <= 6) :
+
+$thetext=chr(34)."title".chr(34).":".chr(34);
+$endtext=",";
 $start= strpos($value, $thetext);
 //echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
+$tmptext = substr($value,$start+strlen($thetext));
 //echo $start+strlen($thetext)+1;
 //echo chr(10);
 $end=strpos($tmptext, $endtext);
 //echo $end . chr(10);
-$wind = substr($tmptext,0,$end);
-$wind = str_replace( "Wind", "Wend Direction and Speed", $wind).". ";
-$wind = str_replace( " mph", " miles per hour", $wind );
-$wind = str_replace( " E ", " From the East ", $wind );
-$wind = str_replace( " NE ", " From the North East ", $wind );
-$wind = str_replace( " W ", " From the West ", $wind );
-$wind = str_replace( " NW ", " From the North West ", $wind );
-$wind = str_replace( " N ", " From the North ", $wind );
-$wind = str_replace( " S ", " From the South ", $wind );
-$wind = str_replace( " SE ", " From the South East ", $wind );
-$wind = str_replace( " SW ", " From the South West ", $wind );
-//echo $wind;
-//echo chr(10);
+$theday = substr($tmptext,0,$end-1);
+//echo $theday;
+$value = substr($value,$start+strlen($thetext)+$end);
 
-$thetext="<icon data=";
-$endtext=chr(34)."/>";
+$forecast = $forecast . $theday . ": ";
+
+$thetext=chr(34)."fcttext".chr(34).":".chr(34);
+$endtext=chr(34).",";
 $start= strpos($value, $thetext);
 //echo $start . chr(10);
-$tmptext = substr($value,$start+strlen($thetext)+1);
+$tmptext = substr($value,$start+strlen($thetext));
 //echo $start+strlen($thetext)+1;
 //echo chr(10);
 $end=strpos($tmptext, $endtext);
 //echo $end . chr(10);
-$conditions = "Current weather conditions: ".substr($tmptext,19,$end-23).". ";
-$conditions = str_replace( "_", " ", $conditions );
-//echo $conditions;
-//echo chr(10);
+$thedata = substr($tmptext,0,$end-1);
+//echo $thedata;
+$value = substr($value,$start+strlen($thetext)+$end);
 
-$thetext="<forecast_conditions>";
-$endtext="</forecast_conditions>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext));
-$end=strpos($tmptext, $endtext);
-$forecast1 = substr($tmptext,0,$end);
-
-//echo $forecast1;
-//echo chr(10);
-
-$value=substr($value,$start+10);
-
-$thetext="day_of_week data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$dow1 = fulldow(substr($tmptext,0,$end));
-//echo $dow1;
-//echo chr(10);
-
-$thetext="low data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$low1 = substr($tmptext,0,$end);
-//echo $low1;
-//echo chr(10);
-
-$thetext="high data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$high1 = substr($tmptext,0,$end);
-//echo $high1;
-//echo chr(10);
-
-$thetext="condition data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$cond1 = substr($tmptext,0,$end);
-//echo $cond1;
-//echo chr(10);
-
-$value= substr($value,$start+10);
-
-$thetext="<forecast_conditions>";
-$endtext="</forecast_conditions>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext));
-$end=strpos($tmptext, $endtext);
-$forecast2 = substr($tmptext,0,$end);
-
-//echo $forecast2;
-//echo chr(10);
-
-$thetext="day_of_week data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$dow2 = fulldow(substr($tmptext,0,$end));
-//echo $dow2;
-//echo chr(10);
-
-$thetext="low data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$low2 = substr($tmptext,0,$end);
-//echo $low2;
-//echo chr(10);
-
-$thetext="high data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$high2 = substr($tmptext,0,$end);
-//echo $high2;
-//echo chr(10);
-
-$thetext="condition data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$cond2 = substr($tmptext,0,$end);
-//echo $cond2;
-//echo chr(10);
+$thedata = trim(str_replace( "F ", " degrees Fahrenheit ", $thedata));
+$thedata = trim(str_replace( "F.", " degrees Fahrenheit.", $thedata));
+$thedata = trim(str_replace( "mph", " miles per hour", $thedata));
+$thedata = trim(str_replace( "MPH", " miles per hour", $thedata));
+$thedata = trim(str_replace( "%", " per cent ", $thedata));
+$thedata = trim(str_replace( " N ", " north ", $thedata));
+$thedata = trim(str_replace( " S ", " south ", $thedata));
+$thedata = trim(str_replace( " E ", " east ", $thedata));
+$thedata = trim(str_replace( " W ", " west ", $thedata));
+$thedata = trim(str_replace( " NE ", " northeast ", $thedata));
+$thedata = trim(str_replace( " NW ", " northwest ", $thedata));
+$thedata = trim(str_replace( " NNE ", " north northeast ", $thedata));
+$thedata = trim(str_replace( " NNW ", " north northwest ", $thedata));
+$thedata = trim(str_replace( " SE ", " southeast ", $thedata));
+$thedata = trim(str_replace( " SW ", " southwest ", $thedata));
+$thedata = trim(str_replace( " SSE ", " south southeast ", $thedata));
+$thedata = trim(str_replace( " SSW ", " south southwest ", $thedata));
+$thedata = trim(str_replace( " WSW ", " west southwest ", $thedata));
+$thedata = trim(str_replace( " WNW ", " west northwest ", $thedata));
+$thedata = trim(str_replace( " ENE ", " east northeast ", $thedata));
+$thedata = trim(str_replace( " ESE ", " east southeast ", $thedata));
+$thedata = trim(str_replace( " in. ", " inches ", $thedata));
+$thedata = trim(str_replace( "wind", "wend", $thedata));
+$thedata = trim(str_replace( "Wind", "Wend", $thedata));
 
 
-$value= substr($value,$start+10);
+$forecast = $forecast . $thedata . ". ";
 
-$thetext="<forecast_conditions>";
-$endtext="</forecast_conditions>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext));
-$end=strpos($tmptext, $endtext);
-$forecast3 = substr($tmptext,0,$end);
+$i++;
+endwhile;
 
-//echo $forecast3;
-//echo chr(10);
+$forecast = str_replace( ".0 ", " ", $forecast);
+$forecast = str_replace( "  ", " ", $forecast);
+$forecast = str_replace( "wind", "wend", $forecast);
+$forecast = str_replace( "Wind", "Wend", $forecast);
 
-$thetext="day_of_week data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$dow3 = fulldow(substr($tmptext,0,$end));
-//echo $dow3;
-//echo chr(10);
+#echo $forecast ;
+#echo chr(10).chr(10);
+#exit;
 
-$thetext="low data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$low3 = substr($tmptext,0,$end);
-//echo $low3;
-//echo chr(10);
-
-$thetext="high data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$high3 = substr($tmptext,0,$end);
-//echo $high3;
-//echo chr(10);
-
-$thetext="condition data=";
-$endtext=chr(34)."/>";
-$start= strpos($value, $thetext);
-$tmptext = substr($value,$start+strlen($thetext)+1);
-$end=strpos($tmptext, $endtext);
-$cond3 = substr($tmptext,0,$end);
-//echo $cond3;
-//echo chr(10);
-
-$forecast="Here's the three day forecast. $dow1: $cond1 with a Low temperature of $low1 degrees and expected high of $high1 degrees fahrenheit. ";
-$forecast=$forecast . "$dow2: $cond2 with a Low temperature of $low2 degrees and expected high of $high2 degrees. ";
-$forecast=$forecast . "$dow3: $cond3 with a Low temperature of $low3 degrees and expected high of $high3 degrees. Thank you for calling. Good bye.";
-
-$msg= chr(34).$location.$temperature.$humidity.$wind.$conditions.$forecast.chr(34);
+$msg= chr(34).$forecast. "Have a nice day. Good bye.".chr(34);
 $msg = str_replace( ",", " ", $msg );
 
 if ($debug) :
@@ -548,7 +496,7 @@ execute_agi("SET VARIABLE WEATHER $msg");
 //echo chr(10);
 
 if ($emaildebuglog) :
- system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles ZIP Weather ver. 5.0 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
+ system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather by Weather Underground ver. 5.1 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
 endif ;
 
 // clean up file handlers etc.

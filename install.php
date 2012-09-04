@@ -12,6 +12,8 @@ if ( (isset($amp_conf['ASTVARLIBDIR'])?$amp_conf['ASTVARLIBDIR']:'') == '') {
 } else {
 	$astlib_path = $amp_conf['ASTVARLIBDIR'];
 }
+// Need to add check here to check existing mysql table, get rid of zipcode and add wgroundkey
+// add primary key index 
 
 
 ?><br>Installing Default Configuration values.<br>
