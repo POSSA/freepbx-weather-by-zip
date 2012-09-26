@@ -17,7 +17,7 @@
 /************** FreePBX Weather By Zip Module **************
 Additions and alterations made to the original Nerdvittles file are commented with #module
 PBX Open Source Software Alliance
-4 September 2012
+26 September 2012
 ************* FreePBX Weather By Zip Module **************/
 
 //*** start code added for #module compatibility
@@ -25,14 +25,15 @@ $bootstrap_settings['freepbx_auth'] = false;
 if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
 include_once('/etc/asterisk/freepbx.conf');
 }
+// get user data from module
+$date = weatheroptions_getconfig();
 //*** end code added for #module compatibility
-
 
 //-------- DON'T CHANGE ANYTHING ABOVE THIS LINE ----------------
 
 // #module  following line is changed to get the API key from the GUI
-// $apikey ="12345" ;
- $apikey ="12345" ;
+// $apikey ="12345" ;   //old nv line
+$apikey = $date[1] ;
 
  $debug = 1;
  $newlogeachdebug = 1;
@@ -40,10 +41,6 @@ include_once('/etc/asterisk/freepbx.conf');
  $email = "yourname@yourdomain" ;
 
 //-------- DON'T CHANGE ANYTHING BELOW THIS LINE ----------------
-
-
-
-
 
 $states_name  = array('AL'=>"Alabama",'AK'=>"Alaska",'AZ'=>"Arizona",'AR'=>"Arkansas",'CA'=>"California",'CO'=>"Colorado",'CT'=>"Connecticut",'DE'=>"Delaware",'FL'=>"Florida",'GA'=>"Georgia",'HI'=>"Hawaii",'ID'=>"Idaho",'IL'=>"Illinois", 'IN'=>"Indiana", 'IA'=>"Iowa",  'KS'=>"Kansas",'KY'=>"Kentucky",'LA'=>"Louisiana",'ME'=>"Maine",'MD'=>"Maryland", 'MA'=>"Massachusetts",'MI'=>"Michigan",'MN'=>"Minnesota",'MS'=>"Mississippi",'MO'=>"Missouri",'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",'OK'=>"Oklahoma", 'OR'=>"Oregon",'PA'=>"Pennsylvania",'RI'=>"Rhode Island",'SC'=>"South Carolina",'SD'=>"South Dakota",'TN'=>"Tennessee",'TX'=>"Texas",'UT'=>"Utah",'VT'=>"Vermont",'VA'=>"Virginia",'WA'=>"Washington",'DC'=>"Washington D.C.",'WV'=>"West Virginia",'WI'=>"Wisconsin",'WY'=>"Wyoming",'AB'=>"Alberta",'BC'=>"British Columbia",'MB'=>"Manitoba",'NB'=>"New Brunswick",'WY'=>"Wyoming",'NL'=>"Newfoundland",'WY'=>"Wyoming",'NT'=>"Northwest Territories",'NS'=>"Nova Scotia",'NU'=>"Nunavut",'ON'=>"Ontario",'PE'=>"Prince Edward Island",'QC'=>"Quebec",'SK'=>"Saskatchewan",'YT'=>"Yukon");
 $states_abbr = array();

@@ -11,6 +11,15 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU General Public License for more details.
 
+// check to see if user has automatic updates enabled
+$cm =& cronmanager::create($db);
+$online_updates = $cm->updates_enabled() ? true : false;
+
+// check if new version of module is available
+if ($online_updates && $foo = weatherzip_vercheck()) {
+	print "<br>A <b>new version</b> of this module is available from the <a target='_blank' href='http://pbxossa.org'>PBX Open Source Software Alliance</a><br>";
+}
+
 //tts_findengines()
 if(count($_POST)){
 	weatheroptions_saveconfig();
@@ -22,20 +31,11 @@ if(count($_POST)){
 $fcc = new featurecode('weatherzip', 'weatherzip');
 $featurecode = $fcc->getCodeActive(); 
 
-// check to see if user has automatic updates enabled
-$cm =& cronmanager::create($db);
-$online_updates = $cm->updates_enabled() ? true : false;
-
-// check if new version of module is available
-if ($online_updates && $foo = weatherzip_vercheck()) {
-	print "<br>A <b>new version</b> of this module is available from the <a target='_blank' href='http://pbxossa.org'>PBX Open Source Software Alliance</a><br>";
-	}
-
 ?>
 <form method="POST" action="">
 	<br><h2><?php echo _("U.S. Weather by Zipcode")?><hr></h5></td></tr>
-Weather by Zip Code allow you to retrieve current weather information from any touchtone phone using nothing more than your PBX connected to the Internet.  When prompted, you key in any of 42,740 U.S. Zip Codes using a touchtone phone. The report is downloaded, converted to an audio file, and played back to you.<br><br>
-Current conditions and a seven-day forecast for the chosen city then will be retrieved from the National Weather Service and played back to your telephone using the selected text-to-speech engine. <br><br>
+Weather by Zip Code allows you to retrieve current weather information from any touchtone phone using nothing more than your PBX connected to the Internet.  When prompted you key your U.S. Zip Code, the report is downloaded, converted to an audio file, and played back to you.<br><br>
+Current conditions and/or forecast for the chosen Zip Code will then will be retrieved from the selected service using the selected text-to-speech engine. <br><br>
 The feature code to access this service is currently set to <b><?PHP print $featurecode; ?></b>.  This value can be changed in Feature Codes. <br>
 
 <br><h5>User Data:<hr></h5>
@@ -46,9 +46,9 @@ Select the Text To Speach engine and Forecast source combination you wish the We
 <?php
 echo "<option".(($date[0]=='noaa-flite')?' selected':'').">noaa-flite</option>\n";
 echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
-echo "<option".(($date[0]=='googlew-flite')?' selected':'').">wunderground-flite</option>\n";
-echo "<option".(($date[0]=='googlew-swift')?' selected':'').">wunderground-swift</option>\n";
-echo "<option".(($date[0]=='googlew-googletts')?' selected':'').">wunderground-googletts</option>\n";
+echo "<option".(($date[0]=='wunderground-flite')?' selected':'').">wunderground-flite</option>\n";
+echo "<option".(($date[0]=='wunderground-swift')?' selected':'').">wunderground-swift</option>\n";
+echo "<option".(($date[0]=='wunderground-googletts')?' selected':'').">wunderground-googletts</option>\n";
 ?>
 </select>
 <br><a href="#" class="info">Wunderground API KEY:<span>Input free API key from registration with http://wunderground.com weather service</span></a>
@@ -60,7 +60,7 @@ echo "<option".(($date[0]=='googlew-googletts')?' selected':'').">wunderground-g
 <b>swift</b> - Cepstral Swift Text to Speech Engine<br>
 <b>googletts</b> - Google text to speech engine by Lefteris Zafiris<br>
 		
-<hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
+<br><br><input type="submit" value="Submit" name="B1"><br>
 
 <center><br>
 The module is maintained by the developer community at <a target="_blank" href="http://pbxossa.org"> PBX Open Source Software Alliance</a>.  Support, documentation and current versions are available at the module <a target="_blank" href="https://github.com/POSSA/freepbx-weather-by-zip">dev site</a></center>
