@@ -225,7 +225,8 @@ endif ;
 
 $forecast="Here are the latest weather conditions and the 3 day forecast for $place. Brought to you by Weather Underground and Nerd Vittles. ";
 
-$query = "http://api.wunderground.com/api/$apikey/conditions/q/$state/$city.json";
+//$query = "http://api.wunderground.com/api/$apikey/conditions/q/$state/$city.json";
+$query = "http://api.wunderground.com/api/$apikey/conditions/q/$zip.json";
 
 $query = trim(str_replace( " ", "_", $query));
 

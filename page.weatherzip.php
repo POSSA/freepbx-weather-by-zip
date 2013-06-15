@@ -45,9 +45,9 @@ Select the Text To Speach engine and Forecast source combination you wish the We
 <select size="1" name="engine">
 <?php
 echo "<option".(($date[0]=='noaa-flite')?' selected':'').">noaa-flite</option>\n";
-echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
+//echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
 echo "<option".(($date[0]=='wunderground-flite')?' selected':'').">wunderground-flite</option>\n";
-echo "<option".(($date[0]=='wunderground-swift')?' selected':'').">wunderground-swift</option>\n";
+//echo "<option".(($date[0]=='wunderground-swift')?' selected':'').">wunderground-swift</option>\n";
 echo "<option".(($date[0]=='wunderground-googletts')?' selected':'').">wunderground-googletts</option>\n";
 ?>
 </select>
