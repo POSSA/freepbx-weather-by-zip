@@ -1,12 +1,12 @@
-#!/usr/bin/php -q 
+#!/usr/bin/php -q
 <?php
  ob_implicit_flush(false); 
  error_reporting(0); 
  set_time_limit(300); 
  $ttsengine[0] = "flite" ;
- $ttsengine[1] = "swift" ;
+ $ttsengine[1] = "/usr/bin/swift" ;
 
-//   Nerd Vittles ZIP Weather ver. 4.1, (c) Copyright Ward Mundy, 2007-2012. All rights reserved.
+//   Nerd Vittles ZIP Weather ver. 4.2, (c) Copyright Ward Mundy & Associates LLC, 2007-2013. All rights reserved.
 //   #module  All areas changed from the original Nerd Vittles script are marked with #module
 //-------- DON'T CHANGE ANYTHING ABOVE THIS LINE ----------------
 
@@ -83,7 +83,7 @@ endif ;
  $stdout = fopen( 'php://stdout', 'w' ); 
 
 if ($debug) :
-  fputs($stdlog, "Nerd Vittles ZIP Weather ver 4.1 (c) Copyright 2007-2012, Ward Mundy. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
+  fputs($stdlog, "Nerd Vittles ZIP Weather ver 4.2 (c) Copyright 2007-2013, Ward Mundy & Associates LLC. All Rights Reserved.\n\n" . date("F j, Y - H:i:s") . "  *** New session ***\n\n" ); 
 endif ;
 
 function read() {  
@@ -205,7 +205,8 @@ $value = "";
 //  #module - Following line has been changed from the original script
 $link = mysql_connect("localhost", $dsn['username'], $dsn['password'])
     or die("Data base connection failed");
-mysql_select_db("asterisk")
+//  #module - Following line has been changed from the original script
+	mysql_select_db("asterisk")
     or die("data base open failed");
 
 //$airport = "DEN" ;
@@ -273,7 +274,7 @@ if (strlen($city)<1) :
  fclose($stdout);
  fclose($stdlog);
  if ($emaildebuglog) :
-// system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather ver. 4.1 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
+// system("mime-construct --to $email --subject " . chr(34) . "Nerd Vittles Weather ver. 4.2 Session Log" . chr(34) . " --attachment $log --type text/plain --file $log") ;
   system($txt) ;
  endif ;
  exit ;
@@ -308,14 +309,14 @@ if ($debug) :
 endif ;
 
 
-$thetext="point-forecast-area-title";
+$thetext="current-conditions";
 $start= strpos($value, $thetext);
 //$newvalue="This National Weather Service update provided for " . substr($newvalue, $start+26);
 $value = substr($value,$start);
 $thetext = "</div>" ;
 $start= strpos($value, $thetext);
 $cityupdate="This National Weather Service update for ". $city . " brought to you by Nerd Vittles. ";
-$newvalue=$cityupdate."Current local conditions " . substr($value,27, $start-27). ": ";
+$newvalue=$cityupdate."Current local conditions " . substr($value,79, $start-79). ": ";
 $newvalue = str_replace( " E ", " East of ", $newvalue );
 $newvalue = str_replace( " ENE ", " East North East of ", $newvalue );
 $newvalue = str_replace( " NE ", " North East of ", $newvalue );
@@ -436,16 +437,22 @@ $thetext="</li>";
 $start= strpos($value, $thetext);
 $forecast.=substr($value,0,$start)." ";
 $forecast = str_replace( ",", " ", $forecast );
-$forecast = str_replace( "pm", " p.m", $forecast);
-$forecast = str_replace( "am", " a.m", $forecast);
 $forecast = str_replace( "%", " per cent", $forecast);
-$forecast = str_replace( "wind", "wends", $forecast );
+$forecast = str_replace( "wind", "wend", $forecast );
 $forecast = str_replace( "mph", "miles per hour", $forecast );
 $newvalue.=$forecast;
+$newvalue = str_replace( "&deg;F", " degrees fahrenheit ", $newvalue );
+$newvalue = str_replace( "&deg;C", " degrees centigrade ", $newvalue );
+$newvalue = str_replace( "inchesches", "inches", $newvalue );
 }
 
 
 $newvalue.=" Have a nice day. Good bye.";
+
+if ($debug) :
+  fputs($stdlog, "\n\nForecast: " . $newvalue . "\n\n" );
+endif ;
+
 //======================== end of new code
 
 
@@ -461,7 +468,7 @@ $retcode = fwrite($fd,$newvalue);
 fclose($fd);
 
 $msg = chr(34) . "Your report was successfully downloaded. Please stand bye." . chr(34) ;
-execute_agi("exec $tts $msg") ;
+execute_agi('EXEC $tts $msg') ;
 
 //$retcode2 = system ("flite -f  $tmptext -o $tmpwave") ;
 $retcode2 = system ("$tts -f  $tmptext -o $tmpwave") ;
