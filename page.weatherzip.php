@@ -11,42 +11,60 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //GNU General Public License for more details.
 
+// check to see if user has automatic updates enabled
+$cm =& cronmanager::create($db);
+$online_updates = $cm->updates_enabled() ? true : false;
+
+// check if new version of module is available
+if ($online_updates && $foo = weatherzip_vercheck()) {
+	print "<br>A <b>new version</b> of this module is available from the <a target='_blank' href='http://pbxossa.org'>PBX Open Source Software Alliance</a><br>";
+}
+
 //tts_findengines()
 if(count($_POST)){
 	weatheroptions_saveconfig();
 }
 	$date = weatheroptions_getconfig();
 	$selected = ($date[0]);
-#print_r($selected);
-#	die();
 
 //  Get current featurecode from FreePBX registry
 $fcc = new featurecode('weatherzip', 'weatherzip');
 $featurecode = $fcc->getCodeActive(); 
 
-
 ?>
 <form method="POST" action="">
 	<br><h2><?php echo _("U.S. Weather by Zipcode")?><hr></h5></td></tr>
-Weather by Zip Code allow you to retrieve current weather information from any touchtone phone using nothing more than your PBX connected to the Internet.  When prompted, you key in any of 42,740 U.S. Zip Codes using a touchtone phone. The report is downloaded, converted to an audio file, and played back to you.<br><br>
-Current conditions and a seven-day forecast for the chosen city then will be retrieved from the National Weather Service and played back to your telephone using the selected text-to-speech engine. <br><br>
+Weather by Zip Code allows you to retrieve current weather information from any touchtone phone using nothing more than your PBX connected to the Internet.  When prompted you key your U.S. Zip Code, the report is downloaded, converted to an audio file, and played back to you.<br><br>
+Current conditions and/or forecast for the chosen Zip Code will then will be retrieved from the selected service using the selected text-to-speech engine. <br><br>
 The feature code to access this service is currently set to <b><?PHP print $featurecode; ?></b>.  This value can be changed in Feature Codes. <br>
 
-	<tr><td colspan="2"><br><h5><?php echo _("TTS Engine")?>:<hr></h5></td></tr>
-<tr>Select the Text To Speach engine you wish the Weather by Zip program to use to audio render your reports.<br><br>
-		<td><a href="#" class="info"><?php echo _("Choose an engine")?>:<span><?php echo _("List of TTS engines detected on the server. Choose the one you want to use for the current sentence.")?></span></a></td>
-		<td>
-		<select size="1" name="engine">
+<br><h5>User Data:<hr></h5>
+Select the Text To Speach engine and Forecast source combination you wish the Weather by Zip program to use.<br>The module does not check to see if the selected TTS engine is present, ensure to choose an engine that is installed on the system.<br><br>
+<a href="#" class="info">Choose a service and engine:<span>Choose from the list of supported TTS engines and weather services</span></a>
+
+<select size="1" name="engine">
 <?php
-echo "<option".(($date[0]==flite)?' selected':'').">flite</option>\n";
-echo "<option".(($date[0]==swift)?' selected':'').">swift</option>\n";
+echo "<option".(($date[0]=='noaa-flite')?' selected':'').">noaa-flite</option>\n";
+//echo "<option".(($date[0]=='noaa-swift')?' selected':'').">noaa-swift</option>\n";
+echo "<option".(($date[0]=='wunderground-flite')?' selected':'').">wunderground-flite</option>\n";
+//echo "<option".(($date[0]=='wunderground-swift')?' selected':'').">wunderground-swift</option>\n";
+echo "<option".(($date[0]=='wunderground-googletts')?' selected':'').">wunderground-googletts</option>\n";
 ?>
 </select>
-		</td>
-	</tr><hr><br><br><input type="submit" value="Submit" name="B1"><br><br><br>
+<br><a href="#" class="info">Wunderground API KEY:<span>Input free API key from registration with http://wunderground.com weather service</span></a>
+<input type="text" name="wgroundkey" size="27" value="<?php echo $date[1]; ?>">  <a href="javascript: return false;" class="info"> 
+<br><br>key:<br>
+<b>noaa</b> - National Oceanic and Atmospheric Administration (USA weather service)<br>
+<b>wunderground</b> - Weather API provided by wunderground.com<br>
+<b>flite</b> - Asterisk Flite Text to Speech Engine<br>
+<b>swift</b> - Cepstral Swift Text to Speech Engine<br>
+<b>googletts</b> - Google text to speech engine by Lefteris Zafiris<br>
+		
+<br><br><input type="submit" value="Submit" name="B1"><br>
+
 <center><br>
-The module is maintained by the developer community at <a target="_blank" href="https://github.com/POSSA/"> PBX Open Source Software Alliance</a></center>
+The module is maintained by the developer community at <a target="_blank" href="http://pbxossa.org"> PBX Open Source Software Alliance</a>.  Support, documentation and current versions are available at the module <a target="_blank" href="https://github.com/POSSA/freepbx-weather-by-zip">dev site</a></center>
 <?php
-print '<p align="center" style="font-size:11px;">The Original Weather by Zip Script was created by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.';
+print '<p align="center" style="font-size:11px;">The Weather by Zip and Google Weather scripts were created and are currently maintaned by <a target="_blank" href="http://www.nerdvittles.com">Nerd Vittles</a>.';
 
 ?>
