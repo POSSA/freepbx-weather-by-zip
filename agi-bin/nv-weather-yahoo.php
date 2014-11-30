@@ -1,5 +1,5 @@
 #!/usr/bin/php -q
-<?
+<?php
  ob_implicit_flush(false);
  error_reporting(0);
  set_time_limit(300);
