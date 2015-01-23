@@ -13,7 +13,7 @@
                 Provide U.S. Weather by Zip Code
         </description>
 	 <changelog>
-		*1.3.6* Version bump for FreePBX 12
+		*1.3.6* Version bump for FreePBX 12 and fix short tags issue
 		*1.3.4* Minor overhaul of dialplan generation
 		*1.3.0* Added googletts and google weather support and minor bugs
 		*1.2.1* Updated screen scrape for weather service site
