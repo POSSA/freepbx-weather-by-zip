@@ -1,7 +1,7 @@
 FreePBX Weather by Zipcode
 ==========================
 
-2022-02-27 Reports that this module is no longer working with current versions of FreePBX. Module needs a a review to work with FreePBX 16.
+2022-02-28 Confirmed reports that module is completely broken in FreePBX versions 15 and newer. This module needs a full review and overhaul to work with currently supported FreePBX versions. 
 
 Third party FreePBX module for reading weather infomation based on dtmf zipcode input.
 
